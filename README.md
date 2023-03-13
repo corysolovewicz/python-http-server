@@ -1,24 +1,48 @@
-# simple-http-server
-A simple http server written in python. 
+# python-http-server
+A python http server written in python which creates spoofed iOS screenshots to mess with scammers and gather intel on them.
 
 ## How to run HTTP only server
 ### clone this repo
 `git clone https://github.com/corysolovewicz/python-http-server.git`
 
-### start http only server running on specified address and port
-`cd simple-http-server && python3 http_server.py [address] [port]`
+### switch to branch 'spoof'
+`cd python-http-server && git checkout spoof`
 
-## use 0.0.0.0 for world accessible or 127.0.0.1 for local only
+### install imagemagick
+```
+# install ImageMagick (ubuntu)
+apt-get install ImageMagick
 
-## How to run HTTPS only server
+# install ImageMagick (centos)
+yum install ImageMagick
+
+# confirm installation
+convert -version
+```
+```
+Version: ImageMagick 6.9.10-68 Q16 x86_64 2021-10-14 https://imagemagick.org
+Copyright: © 1999-2019 ImageMagick Studio LLC
+License: https://imagemagick.org/script/license.php
+Features: Cipher DPC Modules OpenMP(3.1) 
+Delegates (built-in): bzlib cairo fontconfig freetype gslib jng jp2 jpeg lcms ltdl lzma openexr pangocairo png ps rsvg tiff wmf x xml zlib
+```
+
+## Currently the images server is only setup to run under https so you'll need to setup certs before starting
+
+## How to run HTTPS images server
 ### first generate certificates
-### You can either 1) create a self signed certificate
+### You can either:
+### 1) create a self signed certificate
 `openssl req -new -x509 -keyout key.pem -out server.pem -days 365 -nodes`
 
 ### Or 2) generate one with letsencrypt certbot
 ```
-# install certbot
+# install certbot (ubuntu)
 apt-get install certbot
+
+# install certbot (centos)
+yum install certbot python3-certbot-apache epel-release
+
 # run certonly option
 certbot certonly
 ```
@@ -59,33 +83,54 @@ If you like Certbot, please consider supporting our work by:
 
 ```
 
-### Now start your server
-#### using self signed cert
-`python3 https_server.py 0.0.0.0 443 server.pem key.pem`
-
-#### using letsencrypt cert
-`python3 https.py 0.0.0.0 443 "/etc/letsencrypt/live/example.com/fullchain.pem" "/etc/letsencrypt/live/example.com/privkey.pem"
+### Now start your server using letsencrypt cert
+`python3 https_images_server.py 0.0.0.0 443 "/etc/letsencrypt/live/example.com/fullchain.pem" "/etc/letsencrypt/live/example.com/privkey.pem"
 `
 
-### run https.py in the background and log to file named http.log
-#### run in screen session
+### test that the server is running by going to
+`https://example.com/image/IMG_1234.png`
+### You should be able to the output from std output
+```
+[IP ADDRESS] - - [13/Mar/2023 11:58:44] "GET /image/IMG_1234.png HTTP/1.1" 200 -
+INFO:root:GET request,
+Path: /favicon.ico
+Headers:
+Host: example.com
+Connection: keep-alive
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36
+Accept: image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8
+Sec-GPC: 1
+Accept-Language: en-US,en;q=0.9
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: no-cors
+Sec-Fetch-Dest: image
+Referer: https://example.com/image/IMG_1234.png
+Accept-Encoding: gzip, deflate, br
+
+Body:
+
+```
+
+
+### And there should be an image which is loaded
+![This is the sample image which is included](/images/IMG_1234.png)
+
+### run https_images_server.py in the background and log to file named https_images.log
+#### run in screen session so that we don't have to keep a terminal window open
 `screen`
 
 ### start server in screen
-`python3 https_server.py 0.0.0.0 443 "/etc/letsencrypt/live/example.com/fullchain.pem" "/etc/letsencrypt/live/example.com/privkey.pem" > https.log`
+### start https server on port 443 in screen writing to stdout and writing to log using tee
+`python3 https_images server.py 0.0.0.0 443 /etc/letsencrypt/live/example.com/fullchain.pem /etc/letsencrypt/live/example.com/privkey.pem 2>&1 | tee -a https.log`
 
-### or start https server on port 443 in screen writing to stdout and writing to log using tee
-`python3 https_server.py 0.0.0.0 443 /etc/letsencrypt/live/example.com/fullchain.pem /etc/letsencrypt/live/example.com/privkey.pem 2>&1 | tee -a https.log`
-
-### or start http server on port 80 in screen writing to stdout and writing to log using tee
-`python3 http_server.py 0.0.0.0 80 2>&1 | tee -a http.log`
-
-### or start https server for images on port 443 in screen 
-### writing to stdout and writing to log using tee
-`python3 https_images_server.py 0.0.0.0 443 /etc/letsencrypt/live/example.com/fullchain.pem /etc/letsencrypt/live/example.com/privkey.pem 2>&1 | tee -a https.log`
 
 ### disconnect from screen
 `CTRL-A CTRL-D`
 
 ### exiftool command to remove extra exifdata for privacy purposes for an entire directory of image files
 `exiftool -all:all= -overwrite_original -r <directory>`
+
+### if you want to fingerprint the browsers of the users you will need
+### to create an account and API Key for FingerPrint JS
+### and add it to ./spoof/js/fingerprintjs.js
+`https://dashboard.fingerprint.com/signup`
