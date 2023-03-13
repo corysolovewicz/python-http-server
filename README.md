@@ -2,13 +2,13 @@
 A python http server written in python which creates spoofed iOS screenshots to mess with scammers and gather intel on them.
 
 ## How to run HTTP only server
-### clone this repo
+### Clone this repo
 `git clone https://github.com/corysolovewicz/python-http-server.git`
 
-### switch to branch 'spoof'
+### Switch to branch 'spoof'
 `cd python-http-server && git checkout spoof`
 
-### install imagemagick
+### Install imagemagick
 ```
 # install ImageMagick (ubuntu)
 apt-get install ImageMagick
@@ -29,13 +29,13 @@ Delegates (built-in): bzlib cairo fontconfig freetype gslib jng jp2 jpeg lcms lt
 
 ## Currently the images server is only setup to run under https so you'll need to setup certs before starting
 
-## How to run HTTPS images server
-### first generate certificates
+# How to run HTTPS images server
+## First generate certificates
 ### You can either:
-### 1) create a self signed certificate
+### 1) Create a self signed certificate
 `openssl req -new -x509 -keyout key.pem -out server.pem -days 365 -nodes`
 
-### Or 2) generate one with letsencrypt certbot
+### Or 2) Generate one with letsencrypt certbot
 ```
 # install certbot (ubuntu)
 apt-get install certbot
@@ -56,11 +56,11 @@ How would you like to authenticate with the ACME CA?
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Select the appropriate number [1-3] then [enter] (press 'c' to cancel): 
 ```
-### pick option 2
+### Pick option 2
 ```
 Select the appropriate number [1-3] then [enter] (press 'c' to cancel): 2
 ```
-### set the domain to <your_domain>
+### Set the domain to <your_domain>
 ```
 Please enter the domain name(s) you would like on your certificate (comma and/or
 space separated) (Enter 'c' to cancel): example.com
@@ -87,9 +87,10 @@ If you like Certbot, please consider supporting our work by:
 `python3 https_images_server.py 0.0.0.0 443 "/etc/letsencrypt/live/example.com/fullchain.pem" "/etc/letsencrypt/live/example.com/privkey.pem"
 `
 
-### test that the server is running by going to
+### Test that the server is running by going to:
 `https://example.com/image/IMG_1234.png`
-### You should be able to the output from std output
+
+### You should be able to see confirm with the output from stdout that it's working
 ```
 [IP ADDRESS] - - [13/Mar/2023 11:58:44] "GET /image/IMG_1234.png HTTP/1.1" 200 -
 INFO:root:GET request,
@@ -112,32 +113,33 @@ Body:
 ```
 
 
-### And there should be an image which is loaded
+### Here is the sample image which should load to show that it works.
 ![This is the sample image which is included](/images/IMG_1234.png)
 
-### run https_images_server.py in the background and log to file named https_images.log
+## Here are some additional tips to run it long term
+### Run https_images_server.py in the background and log to file named https_images.log
 #### run in screen session so that we don't have to keep a terminal window open
 `screen`
 
-### start server in screen
+## Start server in screen
 ### start https server on port 443 in screen writing to stdout and writing to log using tee
 `python3 https_images server.py 0.0.0.0 443 /etc/letsencrypt/live/example.com/fullchain.pem /etc/letsencrypt/live/example.com/privkey.pem 2>&1 | tee -a https.log`
 
 
-### disconnect from screen
+### Disconnect from screen
 `CTRL-A CTRL-D`
 
 
 # Misc Notes: 
-### exiftool command to remove extra exifdata for privacy purposes for an entire directory of image files
+### This is exiftool command to remove extra exifdata for privacy purposes for an entire directory of image files
 `exiftool -all:all= -overwrite_original -r <directory>`
 
-### if you want to fingerprint the browsers of the users you will need
+### If you want to fingerprint the browsers of the users you will need
 ### to create an account and API Key for FingerPrint JS
 ### and add it to ./spoof/js/fingerprintjs.js
 `https://dashboard.fingerprint.com/signup`
 
-### if all you want to do is create iOS screenshots you can simply run this command after checking out the repo
+### If all you want to do is create iOS screenshots you can simply run this command after checking out the repo
 `./spoof/iMessage_1.sh <filename>`
 ### ignore the following warning as I'm not sure how to get rid of it passing `-q` didn't seem to quiet it
 ```
