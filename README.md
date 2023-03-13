@@ -127,6 +127,8 @@ Body:
 ### disconnect from screen
 `CTRL-A CTRL-D`
 
+
+# Misc Notes: 
 ### exiftool command to remove extra exifdata for privacy purposes for an entire directory of image files
 `exiftool -all:all= -overwrite_original -r <directory>`
 
@@ -134,3 +136,11 @@ Body:
 ### to create an account and API Key for FingerPrint JS
 ### and add it to ./spoof/js/fingerprintjs.js
 `https://dashboard.fingerprint.com/signup`
+
+### if all you want to do is create iOS screenshots you can simply run this command after checking out the repo
+`./spoof/iMessage_1.sh <filename>`
+### ignore the following warning as I'm not sure how to get rid of it passing `-q` didn't seem to quiet it
+```
+Warning: [minor] Text/EXIF chunk(s) found after PNG IDAT (fixed) - ./images/<filename>
+```
+### You can find your newly created image in `<project root>/images/<filename>`
