@@ -80,5 +80,12 @@ If you like Certbot, please consider supporting our work by:
 ### or start http server on port 80 in screen writing to stdout and writing to log using tee
 `python3 http_server.py 0.0.0.0 80 2>&1 | tee -a http.log`
 
+### or start https server for images on port 443 in screen 
+### writing to stdout and writing to log using tee
+`python3 https_images_server.py 0.0.0.0 443 /etc/letsencrypt/live/example.com/fullchain.pem /etc/letsencrypt/live/example.com/privkey.pem 2>&1 | tee -a https.log`
+
 ### disconnect from screen
 `CTRL-A CTRL-D`
+
+### exiftool command to remove extra exifdata for privacy purposes for an entire directory of image files
+`exiftool -all:all= -overwrite_original -r <directory>`
